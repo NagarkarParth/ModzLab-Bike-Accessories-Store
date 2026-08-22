@@ -1,5 +1,6 @@
 import CategorySection from "../components/CategorySection";
 import { ArrowRight, ShieldCheck, Truck, Headphones } from "lucide-react";
+import ProductSection from "../components/ProductSection";
 import logo from "../assets/modzlab-logo.png";
 import "./Home.css";
 
@@ -79,6 +80,7 @@ function Home() {
 
       </section>
         <CategorySection />
+        <ProductSection />
     </div>
   );
 }

@@ -1,3 +1,5 @@
+/* ================= NAVBAR ================= */
+
 .navbar {
   width: 100%;
   background: #080808;
@@ -7,18 +9,19 @@
   z-index: 1000;
 }
 
+/* ================= NAVBAR CONTAINER ================= */
+
 .navbar-container {
   max-width: 1400px;
   margin: auto;
   height: 75px;
   padding: 0 30px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-/* Logo */
+/* ================= LOGO ================= */
 
 .logo {
   font-size: 24px;
@@ -35,7 +38,7 @@
   color: #e50914;
 }
 
-/* Navigation */
+/* ================= NAVIGATION ================= */
 
 .nav-links {
   display: flex;
@@ -43,25 +46,60 @@
   gap: 35px;
 }
 
-.nav-links a {
+/* Navigation Links + Buttons */
+
+.nav-links a,
+.nav-links button {
   color: #ffffff;
   text-decoration: none;
   font-size: 15px;
   font-weight: 500;
-  transition: 0.3s;
+  position: relative;
+  transition: color 0.3s ease;
+
+  /* Button reset */
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  cursor: pointer;
 }
 
-.nav-links a:hover {
+/* Smooth red underline */
+
+.nav-links a::after,
+.nav-links button::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -7px;
+  width: 0;
+  height: 2px;
+  background: #e50914;
+  transition: width 0.3s ease;
+}
+
+/* Hover */
+
+.nav-links a:hover,
+.nav-links button:hover {
   color: #e50914;
 }
 
-/* Actions */
+.nav-links a:hover::after,
+.nav-links button:hover::after {
+  width: 100%;
+}
+
+/* ================= ACTIONS ================= */
 
 .nav-actions {
   display: flex;
   align-items: center;
   gap: 12px;
 }
+
+/* ================= ICON BUTTON ================= */
 
 .icon-btn {
   position: relative;
@@ -70,24 +108,27 @@
   border: none;
   cursor: pointer;
   padding: 8px;
-  transition: 0.3s;
+
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
 }
 
 .icon-btn:hover {
   color: #e50914;
+  transform: translateY(-2px);
 }
+
+/* ================= CART COUNT ================= */
 
 .cart-count {
   position: absolute;
   top: -2px;
   right: -3px;
-
   width: 17px;
   height: 17px;
-
   background: #e50914;
   color: #ffffff;
-
   border-radius: 50%;
 
   display: flex;
@@ -98,7 +139,7 @@
   font-weight: bold;
 }
 
-/* Login */
+/* ================= LOGIN ================= */
 
 .login-btn {
   display: flex;
@@ -117,29 +158,45 @@
   font-weight: 600;
 
   cursor: pointer;
-  transition: 0.3s;
+
+  transition:
+    background 0.3s ease,
+    transform 0.3s ease;
 }
 
 .login-btn:hover {
   background: #b80710;
+  transform: translateY(-2px);
 }
 
-/* Mobile Menu Button */
+/* ================= MOBILE MENU BUTTON ================= */
 
 .menu-btn {
   display: none;
+
   background: transparent;
   border: none;
   color: #ffffff;
+
   cursor: pointer;
+  padding: 6px;
+
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
 }
 
-/* Responsive */
+.menu-btn:hover {
+  color: #e50914;
+}
+
+/* ================= TABLET / MOBILE ================= */
 
 @media (max-width: 900px) {
 
   .nav-links {
     position: absolute;
+
     top: 75px;
     left: 0;
 
@@ -147,25 +204,74 @@
 
     background: #080808;
 
-    display: none;
+    display: flex;
     flex-direction: column;
+    align-items: center;
 
-    padding: 25px 0;
+    gap: 0;
+
+    padding: 15px 0;
 
     border-bottom: 1px solid #292929;
+
+    /* Hidden state */
+
+    opacity: 0;
+    visibility: hidden;
+
+    transform: translateY(-15px);
+
+    pointer-events: none;
+
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease,
+      visibility 0.3s ease;
   }
+
+  /* ================= OPEN MENU ================= */
 
   .nav-links.active {
-    display: flex;
+    opacity: 1;
+    visibility: visible;
+
+    transform: translateY(0);
+
+    pointer-events: auto;
   }
 
-  .nav-links a {
+  /* ================= MOBILE LINKS ================= */
+
+  .nav-links a,
+  .nav-links button {
+    width: 90%;
+
+    padding: 15px 10px;
+
+    text-align: center;
+
     font-size: 16px;
+
+    border-bottom: 1px solid #1f1f1f;
   }
+
+  /* Remove underline on mobile */
+
+  .nav-links a::after,
+  .nav-links button::after {
+    display: none;
+  }
+
+  /* ================= MOBILE MENU BUTTON ================= */
 
   .menu-btn {
-    display: block;
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
   }
+
+  /* ================= HIDE LOGIN TEXT ================= */
 
   .login-btn span {
     display: none;
@@ -173,13 +279,25 @@
 
   .login-btn {
     padding: 9px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
   }
 }
+
+/* ================= SMALL MOBILE ================= */
 
 @media (max-width: 500px) {
 
   .navbar-container {
+    height: 70px;
     padding: 0 15px;
+  }
+
+  .nav-links {
+    top: 70px;
   }
 
   .logo {
@@ -188,5 +306,13 @@
 
   .nav-actions {
     gap: 5px;
+  }
+
+  .icon-btn {
+    padding: 7px;
+  }
+
+  .login-btn {
+    padding: 8px;
   }
 }
