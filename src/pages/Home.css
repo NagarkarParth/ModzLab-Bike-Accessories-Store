@@ -1,0 +1,244 @@
+.home {
+  min-height: calc(100vh - 75px);
+}
+
+/* ================= HERO ================= */
+
+.hero {
+  min-height: 650px;
+  max-width: 1400px;
+  margin: auto;
+  padding: 70px 60px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-content {
+  width: 55%;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-tag {
+  color: #e50914;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+}
+
+.hero h1 {
+  font-size: clamp(50px, 7vw, 95px);
+  line-height: 0.95;
+  font-weight: 900;
+  letter-spacing: -3px;
+  margin-bottom: 30px;
+}
+
+.hero h1 span {
+  color: #e50914;
+}
+
+.hero-description {
+  max-width: 560px;
+  color: #b5b5b5;
+  font-size: 17px;
+  line-height: 1.7;
+  margin-bottom: 35px;
+}
+
+/* ================= BUTTONS ================= */
+
+.hero-buttons {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.primary-btn,
+.secondary-btn {
+  min-height: 50px;
+  padding: 0 25px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  border-radius: 5px;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.primary-btn {
+  background: #e50914;
+  color: white;
+  border: 1px solid #e50914;
+}
+
+.primary-btn:hover {
+  background: #b80710;
+  border-color: #b80710;
+  transform: translateY(-2px);
+}
+
+.secondary-btn {
+  background: transparent;
+  color: white;
+  border: 1px solid #555;
+}
+
+.secondary-btn:hover {
+  border-color: #e50914;
+  color: #e50914;
+}
+
+/* ================= HERO DESIGN ================= */
+
+.hero-design {
+  width: 42%;
+  height: 480px;
+
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-circle {
+  width: 580px;
+  height: 580px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
+}
+
+.logo-circle img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+}
+/* ================= FEATURES ================= */
+
+.features {
+  max-width: 1400px;
+  margin: auto;
+
+  padding: 30px 60px 50px;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 20px;
+}
+
+.feature-card {
+  background: #111111;
+
+  border: 1px solid #242424;
+
+  padding: 25px;
+
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  border-radius: 8px;
+
+  transition: 0.3s;
+}
+
+.feature-card:hover {
+  border-color: #e50914;
+  transform: translateY(-3px);
+}
+
+.feature-card svg {
+  color: #e50914;
+  flex-shrink: 0;
+}
+
+.feature-card h3 {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.feature-card p {
+  color: #888;
+  font-size: 13px;
+}
+
+/* ================= TABLET ================= */
+
+@media (max-width: 900px) {
+
+  .hero {
+    min-height: auto;
+    padding: 70px 30px;
+  }
+
+  .hero-content {
+    width: 100%;
+  }
+
+  .hero-design {
+    display: none;
+  }
+
+  .features {
+    padding: 20px 30px 40px;
+  }
+
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 600px) {
+
+  .hero {
+    padding: 55px 20px;
+  }
+
+  .hero-tag {
+    font-size: 11px;
+    letter-spacing: 2px;
+  }
+
+  .hero h1 {
+    font-size: 52px;
+    letter-spacing: -2px;
+  }
+
+  .hero-description {
+    font-size: 15px;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+  }
+
+  .primary-btn,
+  .secondary-btn {
+    width: 100%;
+  }
+
+  .features {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+
+}
