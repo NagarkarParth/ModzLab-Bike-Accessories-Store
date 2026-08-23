@@ -2,262 +2,277 @@ import {
   Heart,
   ShoppingCart,
   Star,
-  ArrowRight
+  ArrowRight,
 } from "lucide-react";
+
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import "./ProductSection.css";
 import { useCart } from "../context/CartContext";
+import products from "../data/products";
 
-const products = [
-  {
-    id: 1,
-    name: "Performance Exhaust",
-    category: "Exhaust",
-    price: 4999,
-    oldPrice: 5999,
-    rating: 4.8,
-    reviews: 24,
-    image: "/products/exhaust.jpg",
-  },
-  {
-    id: 2,
-    name: "LED Fog Light",
-    category: "Fog Lights",
-    price: 1299,
-    oldPrice: 1699,
-    rating: 4.7,
-    reviews: 18,
-    image: "/products/fog-light.jpg",
-  },
-  {
-    id: 3,
-    name: "Premium Phone Holder",
-    category: "Phone Holders",
-    price: 899,
-    oldPrice: 1199,
-    rating: 4.6,
-    reviews: 31,
-    image: "/products/phone-holder.jpg",
-  },
-  {
-    id: 4,
-    name: "Sport Bike Mirrors",
-    category: "Mirrors",
-    price: 1499,
-    oldPrice: 1899,
-    rating: 4.8,
-    reviews: 16,
-    image: "/products/mirrors.jpg",
-  },
-  {
-    id: 5,
-    name: "LED Indicators",
-    category: "Indicators",
-    price: 999,
-    oldPrice: 1299,
-    rating: 4.5,
-    reviews: 21,
-    image: "/products/indicators.jpg",
-  },
-  {
-    id: 6,
-    name: "Riding Gloves",
-    category: "Riding Gloves",
-    price: 799,
-    oldPrice: 999,
-    rating: 4.7,
-    reviews: 42,
-    image: "/products/gloves.jpg",
-  },
-  {
-    id: 7,
-    name: "Sport Bike Visor",
-    category: "Visors",
-    price: 699,
-    oldPrice: 899,
-    rating: 4.6,
-    reviews: 15,
-    image: "/products/visor.jpg",
-  },
-  {
-    id: 8,
-    name: "Premium Tank Pad",
-    category: "Tank Pads",
-    price: 499,
-    oldPrice: 699,
-    rating: 4.5,
-    reviews: 28,
-    image: "/products/tank-pad.jpg",
-  },
-];
+function ProductSection({ selectedCategory }) {
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
 
-function ProductSection() {
-    const { addToCart } = useCart();
-    const [wishlist, setWishlist] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
+  const [addedProduct, setAddedProduct] = useState(null);
+
+  const filteredProducts =
+    selectedCategory === "All"
+      ? products
+      : products.filter(
+          (product) =>
+            product.category === selectedCategory
+        );
+
+  const handleWishlist = (e, productId) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setWishlist((currentWishlist) => {
+      if (currentWishlist.includes(productId)) {
+        return currentWishlist.filter(
+          (id) => id !== productId
+        );
+      }
+
+      return [...currentWishlist, productId];
+    });
+  };
+
+  const handleAddToCart = (e, product) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    addToCart(product);
+
+    setAddedProduct(product.id);
+
+    setTimeout(() => {
+      setAddedProduct(null);
+    }, 1200);
+  };
+
+  const openProduct = (productId) => {
+    navigate(`/product/${productId}`);
+  };
+
   return (
-    <section id="products" className="products-section">
-
-      {/* ================= SECTION HEADER ================= */}
+    <section
+      id="products"
+      className="products-section"
+    >
+      {/* SECTION HEADER */}
 
       <div className="products-heading">
-
         <div>
-          <p>
-            OUR COLLECTION
-          </p>
+          <p>OUR COLLECTION</p>
 
           <h2>
-            Featured <span>Products</span>
+            {selectedCategory === "All"
+              ? "Featured"
+              : selectedCategory}{" "}
+            <span>Products</span>
           </h2>
         </div>
 
-        <button className="view-all-btn">
-          View All
+        <button
+          className="view-all-btn"
+          type="button"
+          onClick={() => {
+            const categories =
+              document.getElementById(
+                "categories"
+              );
+
+            if (categories) {
+              categories.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }
+          }}
+        >
+          Categories
           <ArrowRight size={18} />
         </button>
-
       </div>
 
-      {/* ================= PRODUCTS GRID ================= */}
+      {/* NO PRODUCTS */}
 
-      <div className="products-grid">
+      {filteredProducts.length === 0 ? (
+        <div className="no-products">
+          <h3>No Products Available</h3>
 
-        {products.map((product) => {
+          <p>
+            Products for this category
+            will be added soon.
+          </p>
+        </div>
+      ) : (
+        <div className="products-grid">
+          {filteredProducts.map((product) => {
+            const discount = Math.round(
+              ((product.oldPrice -
+                product.price) /
+                product.oldPrice) *
+                100
+            );
 
-          const discount = Math.round(
-            ((product.oldPrice - product.price) /
-              product.oldPrice) *
-              100
-          );
+            const isWishlisted =
+              wishlist.includes(product.id);
 
-          return (
+            const isAdded =
+              addedProduct === product.id;
 
-            <div
-              className="product-card"
-              key={product.id}
-            >
+            return (
+              <div
+                className="product-card"
+                key={product.id}
+              >
+                {/* PRODUCT IMAGE */}
 
-              {/* ================= PRODUCT IMAGE ================= */}
+                <div
+                  className="product-image"
+                  onClick={() =>
+                    openProduct(product.id)
+                  }
+                >
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                  />
 
-              <div className="product-image">
+                  <span className="sale-badge">
+                    {discount}% OFF
+                  </span>
 
-                <img
-                  src={product.image}
-                  alt={product.name}
-                />
+                  {/* WISHLIST BUTTON */}
 
-                {/* Sale Badge */}
-                <span className="sale-badge">
-                  {discount}% OFF
-                </span>
+                  <button
+                    type="button"
+                    className={`wishlist-btn ${
+                      isWishlisted
+                        ? "active"
+                        : ""
+                    }`}
+                    title={
+                      isWishlisted
+                        ? "Remove from wishlist"
+                        : "Add to wishlist"
+                    }
+                    onClick={(e) =>
+                      handleWishlist(
+                        e,
+                        product.id
+                      )
+                    }
+                  >
+                    <Heart
+                      size={19}
+                      fill={
+                        isWishlisted
+                          ? "currentColor"
+                          : "none"
+                      }
+                    />
+                  </button>
+                </div>
 
-                {/* Wishlist */}
-                <button
-  className={`wishlist-btn ${
-    wishlist.includes(product.id) ? "active" : ""
-  }`}
-  title="Add to wishlist"
-  onClick={() => {
-    setWishlist((current) =>
-      current.includes(product.id)
-        ? current.filter((id) => id !== product.id)
-        : [...current, product.id]
-    );
-  }}
->
-  <Heart
-    size={19}
-    fill={
-      wishlist.includes(product.id)
-        ? "currentColor"
-        : "none"
-    }
-  />
-</button>
+                {/* PRODUCT INFORMATION */}
 
-              </div>
+                <div className="product-info">
+                  <p className="product-category">
+                    {product.category}
+                  </p>
 
+                  <h3
+                    onClick={() =>
+                      openProduct(product.id)
+                    }
+                  >
+                    {product.name}
+                  </h3>
 
-              {/* ================= PRODUCT INFORMATION ================= */}
+                  {/* RATING */}
 
-              <div className="product-info">
+                  <div className="product-rating">
+                    <div className="stars">
+                      {[1, 2, 3, 4, 5].map(
+                        (star) => (
+                          <Star
+                            key={star}
+                            size={14}
+                            fill={
+                              star <=
+                              Math.round(
+                                product.rating
+                              )
+                                ? "currentColor"
+                                : "none"
+                            }
+                          />
+                        )
+                      )}
+                    </div>
 
-                {/* Category */}
-                <p className="product-category">
-                  {product.category}
-                </p>
-
-                {/* Product Name */}
-                <h3>
-                  {product.name}
-                </h3>
-
-
-                {/* ================= RATING ================= */}
-
-                <div className="product-rating">
-
-                  <div className="stars">
-
-                    {[1, 2, 3, 4, 5].map((star) => (
-
-                      <Star
-                        key={star}
-                        size={14}
-                        fill={
-                          star <= Math.round(product.rating)
-                            ? "currentColor"
-                            : "none"
-                        }
-                      />
-
-                    ))}
-
+                    <small>
+                      {product.rating} (
+                      {product.reviews})
+                    </small>
                   </div>
 
-                  <small>
-                    {product.rating} ({product.reviews})
-                  </small>
+                  {/* PRICE */}
 
+                  <div className="product-price">
+                    <strong>
+                      ₹
+                      {product.price.toLocaleString(
+                        "en-IN"
+                      )}
+                    </strong>
+
+                    <del>
+                      ₹
+                      {product.oldPrice.toLocaleString(
+                        "en-IN"
+                      )}
+                    </del>
+                  </div>
+
+                  {/* ADD TO CART */}
+
+                  <button
+                    type="button"
+                    className={`add-cart-btn ${
+                      isAdded ? "added" : ""
+                    }`}
+                    onClick={(e) =>
+                      handleAddToCart(
+                        e,
+                        product
+                      )
+                    }
+                  >
+                    {isAdded ? (
+                      "✓ Added to Cart"
+                    ) : (
+                      <>
+                        <ShoppingCart
+                          size={17}
+                        />
+                        Add to Cart
+                      </>
+                    )}
+                  </button>
                 </div>
-
-
-                {/* ================= PRICE ================= */}
-
-                <div className="product-price">
-
-                  <strong>
-                    ₹{product.price.toLocaleString("en-IN")}
-                  </strong>
-
-                  <del>
-                    ₹{product.oldPrice.toLocaleString("en-IN")}
-                  </del>
-
-                </div>
-
-
-                {/* ================= ADD TO CART ================= */}
-
-                <button
-                className="add-cart-btn"
-                title="Add to cart"
-                onClick={() => addToCart(product)}
-                >
-                 <ShoppingCart size={17} />
-                 Add to Cart
-                </button>
-
               </div>
-
-            </div>
-
-          );
-        })}
-
-      </div>
-
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

@@ -1,8 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import "./Checkout.css";
 
 function Checkout() {
-  const { cartItems, getCartTotal } = useCart();
+  const { cartItems, cartTotal } = useCart();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -14,6 +17,10 @@ function Checkout() {
     paymentMethod: "Cash on Delivery",
   });
 
+  // =====================================================
+  // HANDLE INPUT
+  // =====================================================
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -21,243 +28,570 @@ function Checkout() {
     });
   };
 
+
+  // =====================================================
+  // PLACE ORDER
+  // =====================================================
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log("Order Details:", {
+    // Check login status
+    const isLoggedIn =
+      localStorage.getItem("isLoggedIn");
+
+    // =================================================
+    // USER NOT LOGGED IN
+    // =================================================
+
+    if (isLoggedIn !== "true") {
+
+      navigate("/login", {
+        state: {
+          from: "/checkout",
+        },
+      });
+
+      return;
+    }
+
+
+    // =================================================
+    // USER IS LOGGED IN
+    // =================================================
+
+    const orderDetails = {
       customer: formData,
       products: cartItems,
-      total: getCartTotal(),
-    });
+      total: cartTotal,
+      paymentMethod: formData.paymentMethod,
+      orderDate: new Date().toISOString(),
+    };
 
-    alert("Order placed successfully!");
+    console.log(
+      "Order Details:",
+      orderDetails
+    );
+
+    alert(
+      "Order placed successfully!"
+    );
   };
+
+
+  // =====================================================
+  // EMPTY CART
+  // =====================================================
 
   if (cartItems.length === 0) {
     return (
-      <div className="container py-5 text-center">
-        <h3>Your cart is empty</h3>
-        <p className="text-muted">
-          Please add products before checkout.
-        </p>
+      <div className="checkout-page">
+
+        <div className="checkout-empty">
+
+          <h2>
+            Your Cart Is Empty
+          </h2>
+
+          <p>
+            Please add products before
+            proceeding to checkout.
+          </p>
+
+        </div>
+
       </div>
     );
   }
 
+
   return (
-    <div className="container py-5">
+    <div className="checkout-page">
 
-      <h2 className="mb-4">Checkout</h2>
+      {/* =================================================
+          HEADER
+      ================================================= */}
 
-      <div className="row">
+      <div className="checkout-header">
 
-        {/* Customer Details */}
-        <div className="col-lg-7">
+        <div className="checkout-container">
 
-          <div className="card shadow-sm mb-4">
-            <div className="card-body">
+          <div className="checkout-brand">
+            MODZLAB
+          </div>
 
-              <h4 className="mb-4">
-                Delivery Information
-              </h4>
+          <h1>
+            Checkout
+          </h1>
 
-              <form onSubmit={handleSubmit}>
+          <p>
+            Complete your order securely
+          </p>
 
-                <div className="mb-3">
-                  <label className="form-label">
-                    Full Name
+        </div>
+
+      </div>
+
+
+      {/* =================================================
+          MAIN CONTENT
+      ================================================= */}
+
+      <div className="checkout-container">
+
+        <div className="checkout-layout">
+
+
+          {/* =================================================
+              DELIVERY INFORMATION
+          ================================================= */}
+
+          <div className="delivery-card checkout-card">
+
+            <div className="checkout-section-heading">
+
+              <div className="checkout-number">
+                01
+              </div>
+
+              <div>
+
+                <h2>
+                  Delivery Information
+                </h2>
+
+                <p>
+                  Enter your delivery details
+                </p>
+
+              </div>
+
+            </div>
+
+
+            {/* FORM */}
+
+            <form
+              id="checkout-form"
+              onSubmit={handleSubmit}
+              className="checkout-form"
+            >
+
+              {/* FULL NAME */}
+
+              <div className="checkout-field">
+
+                <label>
+                  Full Name
+                </label>
+
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Enter your full name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+
+              </div>
+
+
+              {/* MOBILE + EMAIL */}
+
+              <div className="checkout-grid">
+
+                <div className="checkout-field">
+
+                  <label>
+                    Mobile Number
+                  </label>
+
+                  <input
+                    type="tel"
+                    name="mobile"
+                    placeholder="Enter mobile number"
+                    value={formData.mobile}
+                    onChange={handleChange}
+                    required
+                  />
+
+                </div>
+
+
+                <div className="checkout-field">
+
+                  <label>
+                    Email Address
+                  </label>
+
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Enter email address"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+
+                </div>
+
+              </div>
+
+
+              {/* ADDRESS */}
+
+              <div className="checkout-field">
+
+                <label>
+                  Delivery Address
+                </label>
+
+                <textarea
+                  name="address"
+                  placeholder="House no, street, area..."
+                  rows="4"
+                  value={formData.address}
+                  onChange={handleChange}
+                  required
+                />
+
+              </div>
+
+
+              {/* CITY + PINCODE */}
+
+              <div className="checkout-grid">
+
+                <div className="checkout-field">
+
+                  <label>
+                    City
                   </label>
 
                   <input
                     type="text"
-                    name="name"
-                    className="form-control"
-                    value={formData.name}
+                    name="city"
+                    placeholder="Enter city"
+                    value={formData.city}
                     onChange={handleChange}
                     required
                   />
-                </div>
-
-                <div className="row">
-
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">
-                      Mobile Number
-                    </label>
-
-                    <input
-                      type="tel"
-                      name="mobile"
-                      className="form-control"
-                      value={formData.mobile}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">
-                      Email
-                    </label>
-
-                    <input
-                      type="email"
-                      name="email"
-                      className="form-control"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
 
                 </div>
 
-                <div className="mb-3">
-                  <label className="form-label">
-                    Address
+
+                <div className="checkout-field">
+
+                  <label>
+                    Pincode
                   </label>
 
-                  <textarea
-                    name="address"
-                    className="form-control"
-                    rows="3"
-                    value={formData.address}
+                  <input
+                    type="text"
+                    name="pincode"
+                    placeholder="Enter pincode"
+                    value={formData.pincode}
                     onChange={handleChange}
                     required
-                  ></textarea>
-                </div>
-
-                <div className="row">
-
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">
-                      City
-                    </label>
-
-                    <input
-                      type="text"
-                      name="city"
-                      className="form-control"
-                      value={formData.city}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">
-                      Pincode
-                    </label>
-
-                    <input
-                      type="text"
-                      name="pincode"
-                      className="form-control"
-                      value={formData.pincode}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-
-                </div>
-
-                <h5 className="mt-3">
-                  Payment Method
-                </h5>
-
-                <div className="form-check mt-3">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="paymentMethod"
-                    value="Cash on Delivery"
-                    checked={
-                      formData.paymentMethod ===
-                      "Cash on Delivery"
-                    }
-                    onChange={handleChange}
                   />
 
-                  <label className="form-check-label">
-                    Cash on Delivery
-                  </label>
                 </div>
 
-                <div className="form-check mb-4">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="paymentMethod"
-                    value="Online Payment"
-                    checked={
-                      formData.paymentMethod ===
-                      "Online Payment"
-                    }
-                    onChange={handleChange}
-                  />
+              </div>
 
-                  <label className="form-check-label">
-                    Online Payment
-                  </label>
-                </div>
+            </form>
 
-                <button
-                  type="submit"
-                  className="btn btn-dark w-100"
-                >
-                  Place Order
-                </button>
-
-              </form>
-
-            </div>
           </div>
 
-        </div>
 
-        {/* Order Summary */}
-        <div className="col-lg-5">
+          {/* =================================================
+              ORDER SUMMARY
+          ================================================= */}
 
-          <div className="card shadow-sm">
+          <div className="summary-card">
 
-            <div className="card-body">
+            <div className="order-summary">
 
-              <h4 className="mb-4">
-                Order Summary
-              </h4>
+              {/* SUMMARY HEADER */}
 
-              {cartItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="d-flex justify-content-between mb-3"
-                >
-                  <div>
-                    <strong>{item.name}</strong>
+              <div className="summary-top">
 
-                    <br />
+                <div>
 
-                    <small className="text-muted">
-                      Qty: {item.quantity}
-                    </small>
+                  <span className="summary-label">
+                    YOUR ORDER
+                  </span>
+
+                  <h2>
+                    Order Summary
+                  </h2>
+
+                </div>
+
+                <span className="item-badge">
+                  {cartItems.length} Items
+                </span>
+
+              </div>
+
+
+              {/* PRODUCTS */}
+
+              <div className="summary-products">
+
+                {cartItems.map((item) => (
+
+                  <div
+                    className="summary-product"
+                    key={item.id}
+                  >
+
+                    <div className="summary-image">
+
+                      {item.image ? (
+
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                        />
+
+                      ) : (
+
+                        <span>
+                          🏍️
+                        </span>
+
+                      )}
+
+                    </div>
+
+
+                    <div className="summary-product-info">
+
+                      <h3>
+                        {item.name}
+                      </h3>
+
+                      <p>
+                        Qty: {item.quantity}
+                      </p>
+
+                    </div>
+
+
+                    <div className="summary-price">
+
+                      ₹
+                      {Number(item.price) *
+                        item.quantity}
+
+                    </div>
+
                   </div>
 
+                ))}
+
+              </div>
+
+
+              {/* CALCULATION */}
+
+              <div className="summary-calculation">
+
+                <div className="summary-line">
+
                   <span>
-                    ₹{item.price * item.quantity}
+                    Subtotal
                   </span>
+
+                  <strong>
+                    ₹{cartTotal}
+                  </strong>
+
                 </div>
-              ))}
 
-              <hr />
 
-              <div className="d-flex justify-content-between">
-                <strong>Total</strong>
+                <div className="summary-line">
 
-                <strong>
-                  ₹{getCartTotal()}
-                </strong>
+                  <span>
+                    Delivery
+                  </span>
+
+                  <strong className="free">
+                    FREE
+                  </strong>
+
+                </div>
+
+
+                <div className="summary-divider"></div>
+
+
+                <div className="summary-total">
+
+                  <span>
+                    Total
+                  </span>
+
+                  <strong>
+                    ₹{cartTotal}
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+              {/* SECURITY */}
+
+              <div className="checkout-security">
+
+                <span className="security-icon">
+                  🔒
+                </span>
+
+                <div>
+
+                  <strong>
+                    Secure Checkout
+                  </strong>
+
+                  <p>
+                    Your information is protected
+                  </p>
+
+                </div>
+
               </div>
 
             </div>
+
+          </div>
+
+
+          {/* =================================================
+              PAYMENT METHOD
+          ================================================= */}
+
+          <div className="payment-card checkout-card">
+
+            {/* HEADING */}
+
+            <div className="checkout-section-heading">
+
+              <div className="checkout-number">
+                02
+              </div>
+
+              <div>
+
+                <h2>
+                  Payment Method
+                </h2>
+
+                <p>
+                  Choose your preferred payment option
+                </p>
+
+              </div>
+
+            </div>
+
+
+            {/* CASH ON DELIVERY */}
+
+            <label className="payment-option">
+
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="Cash on Delivery"
+                checked={
+                  formData.paymentMethod ===
+                  "Cash on Delivery"
+                }
+                onChange={handleChange}
+                form="checkout-form"
+              />
+
+              <div className="payment-content">
+
+                <strong>
+                  Cash on Delivery
+                </strong>
+
+                <span>
+                  Pay when your order arrives
+                </span>
+
+              </div>
+
+            </label>
+
+
+            {/* ONLINE PAYMENT */}
+
+            <label className="payment-option">
+
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="Online Payment"
+                checked={
+                  formData.paymentMethod ===
+                  "Online Payment"
+                }
+                onChange={handleChange}
+                form="checkout-form"
+              />
+
+              <div className="payment-content">
+
+                <strong>
+                  Online Payment
+                </strong>
+
+                <span>
+                  Pay securely using online payment
+                </span>
+
+              </div>
+
+            </label>
+
+
+            {/* PLACE ORDER */}
+
+            <button
+              type="submit"
+              form="checkout-form"
+              className="place-order-button"
+            >
+
+              <span>
+                PLACE ORDER
+              </span>
+
+              <span className="arrow">
+                →
+              </span>
+
+            </button>
+
+
+            {/* LOGIN MESSAGE */}
+
+            <p
+              style={{
+                textAlign: "center",
+                marginTop: "15px",
+                fontSize: "12px",
+                color: "#777",
+              }}
+            >
+              You must be signed in to place an order.
+            </p>
 
           </div>
 

@@ -157,3 +157,15 @@
     grid-template-columns: 1fr;
   }
 }
+.category-card {
+  cursor: pointer;
+}
+
+.category-card.active {
+  border-color: #e10600;
+  transform: translateY(-3px);
+}
+
+.category-card.active span {
+  color: #e10600;
+}

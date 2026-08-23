@@ -3,11 +3,17 @@ import {
   ShoppingCart,
   User,
   Menu,
-  X
+  X,
+  LogOut,
 } from "lucide-react";
 
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+
+import {
+  Link,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 
 import { useCart } from "../context/CartContext";
 import CartPanel from "./CartPanel";
@@ -22,40 +28,146 @@ function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // ================= NAVIGATION =================
+  // =====================================================
+  // LOGIN STATUS
+  // =====================================================
+
+  const isLoggedIn =
+    localStorage.getItem("isLoggedIn") === "true";
+
+
+  // =====================================================
+  // HOME BUTTON
+  // =====================================================
+
+  const handleHomeClick = () => {
+    setMenuOpen(false);
+
+    if (location.pathname === "/") {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+
+      return;
+    }
+
+    navigate("/");
+
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }, 300);
+  };
+
+
+  // =====================================================
+  // SECTION NAVIGATION
+  // =====================================================
 
   const handleSectionClick = (section) => {
     setMenuOpen(false);
 
-    // If already on Home, scroll directly
     if (location.pathname === "/") {
-      document.getElementById(section)?.scrollIntoView({
+      const element =
+        document.getElementById(section);
+
+      if (element) {
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+
+      return;
+    }
+
+    navigate("/");
+
+    setTimeout(() => {
+      const element =
+        document.getElementById(section);
+
+      if (element) {
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 300);
+  };
+
+
+  // =====================================================
+  // LOGO CLICK
+  // =====================================================
+
+  const handleLogoClick = () => {
+    setMenuOpen(false);
+
+    if (location.pathname === "/") {
+      window.scrollTo({
+        top: 0,
         behavior: "smooth",
       });
-    } else {
-      // Go back to Home first
-      navigate(`/#${section}`);
     }
   };
+
+
+  // =====================================================
+  // LOGIN
+  // =====================================================
+
+  const handleLogin = () => {
+    setMenuOpen(false);
+
+    navigate("/login");
+  };
+
+
+  // =====================================================
+  // LOGOUT
+  // =====================================================
+
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("userEmail");
+
+    setMenuOpen(false);
+
+    alert("You have been logged out.");
+
+    navigate("/");
+  };
+
 
   return (
     <nav className="navbar">
 
       <div className="navbar-container">
 
-        {/* ================= LOGO ================= */}
+        {/* =================================================
+            LOGO
+        ================================================= */}
 
         <Link
           to="/"
           className="logo"
-          onClick={() => setMenuOpen(false)}
-          style={{ textDecoration: "none" }}
+          onClick={handleLogoClick}
+          style={{
+            textDecoration: "none",
+          }}
         >
           <span>MODZ</span>
           <strong>LAB</strong>
         </Link>
 
-        {/* ================= NAVIGATION ================= */}
+
+        {/* =================================================
+            NAVIGATION LINKS
+        ================================================= */}
 
         <div
           className={`nav-links ${
@@ -65,12 +177,13 @@ function Navbar() {
 
           {/* HOME */}
 
-          <Link
-            to="/"
-            onClick={() => setMenuOpen(false)}
+          <button
+            type="button"
+            onClick={handleHomeClick}
           >
             Home
-          </Link>
+          </button>
+
 
           {/* PRODUCTS */}
 
@@ -83,6 +196,7 @@ function Navbar() {
             Products
           </button>
 
+
           {/* CATEGORIES */}
 
           <button
@@ -94,6 +208,7 @@ function Navbar() {
             Categories
           </button>
 
+
           {/* ABOUT */}
 
           <button
@@ -104,6 +219,7 @@ function Navbar() {
           >
             About
           </button>
+
 
           {/* CONTACT */}
 
@@ -118,7 +234,10 @@ function Navbar() {
 
         </div>
 
-        {/* ================= RIGHT SIDE ================= */}
+
+        {/* =================================================
+            RIGHT SIDE ACTIONS
+        ================================================= */}
 
         <div className="nav-actions">
 
@@ -132,15 +251,17 @@ function Navbar() {
             <Search size={21} />
           </button>
 
+
           {/* CART */}
 
           <button
             type="button"
             className="icon-btn cart-btn"
             title="Cart"
-            onClick={() => setCartOpen(true)}
+            onClick={() =>
+              setCartOpen(true)
+            }
           >
-
             <ShoppingCart size={21} />
 
             <span className="cart-count">
@@ -149,18 +270,50 @@ function Navbar() {
 
           </button>
 
-          {/* LOGIN */}
 
-          <button
-            type="button"
-            className="login-btn"
-          >
-            <User size={18} />
+          {/* =================================================
+              LOGIN / LOGOUT
+          ================================================= */}
 
-            <span>Login</span>
-          </button>
+          {!isLoggedIn ? (
 
-          {/* MOBILE MENU */}
+            <button
+              type="button"
+              className="login-btn"
+              onClick={handleLogin}
+            >
+
+              <User size={18} />
+
+              <span>
+                Login
+              </span>
+
+            </button>
+
+          ) : (
+
+            <button
+              type="button"
+              className="login-btn"
+              onClick={handleLogout}
+              title="Logout"
+            >
+
+              <LogOut size={18} />
+
+              <span>
+                Logout
+              </span>
+
+            </button>
+
+          )}
+
+
+          {/* =================================================
+              MOBILE MENU
+          ================================================= */}
 
           <button
             type="button"
@@ -169,22 +322,29 @@ function Navbar() {
               setMenuOpen(!menuOpen)
             }
           >
+
             {menuOpen ? (
               <X size={25} />
             ) : (
               <Menu size={25} />
             )}
+
           </button>
 
         </div>
 
       </div>
 
-      {/* ================= CART PANEL ================= */}
+
+      {/* =================================================
+          CART PANEL
+      ================================================= */}
 
       <CartPanel
         isOpen={cartOpen}
-        onClose={() => setCartOpen(false)}
+        onClose={() =>
+          setCartOpen(false)
+        }
       />
 
     </nav>

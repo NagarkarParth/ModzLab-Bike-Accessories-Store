@@ -34,16 +34,6 @@ export function CartProvider({ children }) {
     });
   };
 
-  // ================= REMOVE FROM CART =================
-
-  const removeFromCart = (productId) => {
-    setCartItems((currentItems) =>
-      currentItems.filter(
-        (item) => item.id !== productId
-      )
-    );
-  };
-
   // ================= INCREASE QUANTITY =================
 
   const increaseQuantity = (productId) => {
@@ -76,6 +66,16 @@ export function CartProvider({ children }) {
     );
   };
 
+  // ================= REMOVE FROM CART =================
+
+  const removeFromCart = (productId) => {
+    setCartItems((currentItems) =>
+      currentItems.filter(
+        (item) => item.id !== productId
+      )
+    );
+  };
+
   // ================= CART COUNT =================
 
   const cartCount = cartItems.reduce(
@@ -85,17 +85,18 @@ export function CartProvider({ children }) {
 
   // ================= CART TOTAL =================
 
-  const cartTotal = cartItems.reduce(
-    (total, item) =>
-      total + item.price * item.quantity,
-    0
-  );
-
-  // ================= GET CART TOTAL =================
-
   const getCartTotal = () => {
-    return cartTotal;
+    return cartItems.reduce(
+      (total, item) =>
+        total + Number(item.price) * item.quantity,
+      0
+    );
   };
+
+  // Cart total as a value
+  const cartTotal = getCartTotal();
+
+  // ================= PROVIDER =================
 
   return (
     <CartContext.Provider
@@ -105,15 +106,17 @@ export function CartProvider({ children }) {
         cartTotal,
         getCartTotal,
         addToCart,
-        removeFromCart,
         increaseQuantity,
         decreaseQuantity,
+        removeFromCart,
       }}
     >
       {children}
     </CartContext.Provider>
   );
 }
+
+// ================= CUSTOM HOOK =================
 
 export function useCart() {
   return useContext(CartContext);

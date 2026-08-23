@@ -398,3 +398,12 @@
   }
 
 }
+.add-cart-btn.added {
+  background: #1f8f4d;
+  border-color: #1f8f4d;
+}
+
+.add-cart-btn.added:hover {
+  background: #1f8f4d;
+  border-color: #1f8f4d;
+}
