@@ -1,0 +1,294 @@
+.login-page {
+  min-height: 100vh;
+  background: #0b0b0b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 1100px;
+  min-height: 650px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #151515;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* ================= LEFT ================= */
+
+.login-left {
+  padding: 55px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.back-btn {
+  position: absolute;
+  top: 25px;
+  left: 30px;
+
+  background: transparent;
+  border: none;
+  color: #aaa;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  cursor: pointer;
+  font-size: 14px;
+
+  transition: 0.3s;
+}
+
+.back-btn:hover {
+  color: white;
+}
+
+.login-brand {
+  font-size: 28px;
+  letter-spacing: 2px;
+  margin-bottom: 35px;
+}
+
+.login-brand span {
+  color: white;
+}
+
+.login-brand strong {
+  color: #e50914;
+}
+
+.login-left h1 {
+  color: white;
+  font-size: 38px;
+  margin: 0 0 12px;
+}
+
+.login-subtitle {
+  color: #999;
+  line-height: 1.6;
+  font-size: 15px;
+  max-width: 430px;
+  margin-bottom: 35px;
+}
+
+/* ================= INPUT ================= */
+
+.input-group {
+  margin-bottom: 22px;
+}
+
+.input-group label {
+  display: block;
+  color: #ddd;
+  font-size: 14px;
+  margin-bottom: 9px;
+}
+
+.input-wrapper {
+  height: 52px;
+  border: 1px solid #333;
+  background: #0f0f0f;
+  border-radius: 9px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 15px;
+  gap: 10px;
+
+  transition: 0.3s;
+}
+
+.input-wrapper:focus-within {
+  border-color: #e50914;
+}
+
+.input-wrapper svg {
+  color: #777;
+  flex-shrink: 0;
+}
+
+.input-wrapper input {
+  width: 100%;
+  height: 100%;
+
+  background: transparent;
+  border: none;
+  outline: none;
+
+  color: white;
+  font-size: 15px;
+}
+
+.input-wrapper input::placeholder {
+  color: #666;
+}
+
+/* ================= PASSWORD ================= */
+
+.password-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.password-label a {
+  color: #e50914;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.password-toggle {
+  background: transparent;
+  border: none;
+  color: #777;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+}
+
+.password-toggle:hover {
+  color: white;
+}
+
+/* ================= LOGIN BUTTON ================= */
+
+.login-submit {
+  width: 100%;
+  height: 52px;
+
+  background: #e50914;
+  border: none;
+  border-radius: 9px;
+
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+
+  cursor: pointer;
+  margin-top: 8px;
+
+  transition: 0.3s;
+}
+
+.login-submit:hover {
+  background: #ff1a25;
+  transform: translateY(-1px);
+}
+
+/* ================= SIGNUP ================= */
+
+.signup-text {
+  text-align: center;
+  color: #888;
+  font-size: 14px;
+  margin-top: 25px;
+}
+
+.signup-text a {
+  color: #e50914;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.signup-text a:hover {
+  text-decoration: underline;
+}
+
+/* ================= RIGHT ================= */
+
+.login-right {
+  position: relative;
+
+  background:
+    linear-gradient(
+      rgba(0, 0, 0, 0.55),
+      rgba(0, 0, 0, 0.85)
+    ),
+    url("https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=1200&q=80");
+
+  background-size: cover;
+  background-position: center;
+
+  display: flex;
+  align-items: flex-end;
+}
+
+.login-overlay {
+  padding: 55px;
+  color: white;
+}
+
+.bike-icon {
+  font-size: 45px;
+  margin-bottom: 15px;
+}
+
+.login-overlay h2 {
+  font-size: 48px;
+  line-height: 0.9;
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.login-overlay h2:nth-child(3) {
+  color: #e50914;
+}
+
+.login-overlay p {
+  color: #ccc;
+  max-width: 350px;
+  line-height: 1.6;
+  margin-top: 25px;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 800px) {
+
+  .login-container {
+    grid-template-columns: 1fr;
+    max-width: 550px;
+  }
+
+  .login-right {
+    display: none;
+  }
+
+  .login-left {
+    padding: 50px 30px;
+  }
+
+  .login-left h1 {
+    font-size: 32px;
+  }
+
+}
+
+@media (max-width: 450px) {
+
+  .login-page {
+    padding: 15px;
+  }
+
+  .login-left {
+    padding: 50px 22px 30px;
+  }
+
+  .login-container {
+    min-height: auto;
+  }
+
+}

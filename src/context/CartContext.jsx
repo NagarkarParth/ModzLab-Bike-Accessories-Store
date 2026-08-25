@@ -1,11 +1,46 @@
-import { createContext, useContext, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-  const [cartItems, setCartItems] = useState([]);
+  // ==========================================
+  // LOAD CART FROM LOCAL STORAGE
+  // ==========================================
 
-  // ================= ADD TO CART =================
+  const [cartItems, setCartItems] = useState(() => {
+    try {
+      const savedCart = localStorage.getItem("modzlab-cart");
+
+      return savedCart ? JSON.parse(savedCart) : [];
+    } catch (error) {
+      console.error("Error loading cart:", error);
+      return [];
+    }
+  });
+
+  // ==========================================
+  // SAVE CART TO LOCAL STORAGE
+  // ==========================================
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        "modzlab-cart",
+        JSON.stringify(cartItems)
+      );
+    } catch (error) {
+      console.error("Error saving cart:", error);
+    }
+  }, [cartItems]);
+
+  // ==========================================
+  // ADD TO CART
+  // ==========================================
 
   const addToCart = (product) => {
     setCartItems((currentItems) => {
@@ -34,7 +69,21 @@ export function CartProvider({ children }) {
     });
   };
 
-  // ================= INCREASE QUANTITY =================
+  // ==========================================
+  // REMOVE FROM CART
+  // ==========================================
+
+  const removeFromCart = (productId) => {
+    setCartItems((currentItems) =>
+      currentItems.filter(
+        (item) => item.id !== productId
+      )
+    );
+  };
+
+  // ==========================================
+  // INCREASE QUANTITY
+  // ==========================================
 
   const increaseQuantity = (productId) => {
     setCartItems((currentItems) =>
@@ -49,7 +98,9 @@ export function CartProvider({ children }) {
     );
   };
 
-  // ================= DECREASE QUANTITY =================
+  // ==========================================
+  // DECREASE QUANTITY
+  // ==========================================
 
   const decreaseQuantity = (productId) => {
     setCartItems((currentItems) =>
@@ -66,37 +117,43 @@ export function CartProvider({ children }) {
     );
   };
 
-  // ================= REMOVE FROM CART =================
+  // ==========================================
+  // CLEAR CART
+  // ==========================================
 
-  const removeFromCart = (productId) => {
-    setCartItems((currentItems) =>
-      currentItems.filter(
-        (item) => item.id !== productId
-      )
-    );
+  const clearCart = () => {
+    setCartItems([]);
+    localStorage.removeItem("modzlab-cart");
   };
 
-  // ================= CART COUNT =================
+  // ==========================================
+  // CART COUNT
+  // ==========================================
 
   const cartCount = cartItems.reduce(
     (total, item) => total + item.quantity,
     0
   );
 
-  // ================= CART TOTAL =================
+  // ==========================================
+  // CART TOTAL
+  // ==========================================
 
   const getCartTotal = () => {
     return cartItems.reduce(
       (total, item) =>
-        total + Number(item.price) * item.quantity,
+        total +
+        Number(item.price) * Number(item.quantity),
       0
     );
   };
 
-  // Cart total as a value
+  // Keep cartTotal as a value for existing components
   const cartTotal = getCartTotal();
 
-  // ================= PROVIDER =================
+  // ==========================================
+  // PROVIDER
+  // ==========================================
 
   return (
     <CartContext.Provider
@@ -109,6 +166,7 @@ export function CartProvider({ children }) {
         increaseQuantity,
         decreaseQuantity,
         removeFromCart,
+        clearCart,
       }}
     >
       {children}
@@ -116,7 +174,9 @@ export function CartProvider({ children }) {
   );
 }
 
-// ================= CUSTOM HOOK =================
+// ==========================================
+// USE CART
+// ==========================================
 
 export function useCart() {
   return useContext(CartContext);
