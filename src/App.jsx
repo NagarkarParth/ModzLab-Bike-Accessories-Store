@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import Navbar from "./components/Navbar";
 
 // Pages
+import AdminDashboard from "./admin/pages/AdminDashboard";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Cart from "./pages/Cart";
@@ -26,157 +27,127 @@ import { CartProvider } from "./context/CartContext";
 
 import "./App.css";
 
-
 // =====================================================
 // SCROLL TO TOP
 // =====================================================
 
 function ScrollToTop() {
-
   const { pathname } = useLocation();
 
   useEffect(() => {
-
     window.scrollTo({
       top: 0,
       left: 0,
       behavior: "smooth",
     });
-
   }, [pathname]);
 
   return null;
 }
-
 
 // =====================================================
 // ANIMATED ROUTES
 // =====================================================
 
 function AnimatedRoutes() {
-
   const location = useLocation();
 
   return (
-
     <div className="page-wrapper">
-
       <Routes location={location}>
 
-        {/* ================= REGISTER ================= */}
-
+        {/* REGISTER */}
         <Route
           path="/register"
           element={<Register />}
         />
 
-
-        {/* ================= HOME ================= */}
-
+        {/* HOME */}
         <Route
           path="/"
           element={<Home />}
         />
 
-
-        {/* ================= CART ================= */}
-
+        {/* CART */}
         <Route
           path="/cart"
           element={<Cart />}
         />
 
-
-        {/* ================= CHECKOUT ================= */}
-
+        {/* CHECKOUT */}
         <Route
           path="/checkout"
           element={<Checkout />}
         />
 
-
-        {/* ================= LOGIN ================= */}
-
+        {/* LOGIN */}
         <Route
           path="/login"
           element={<Login />}
         />
 
-
-        {/* ================= SIGNUP ================= */}
-
+        {/* SIGNUP */}
         <Route
           path="/signup"
           element={<Signup />}
         />
 
-
-        {/* ================= FORGOT PASSWORD ================= */}
-
+        {/* FORGOT PASSWORD */}
         <Route
           path="/forgot-password"
           element={<ForgotPassword />}
         />
 
-
-        {/* ================= RESET PASSWORD ================= */}
-
+        {/* RESET PASSWORD */}
         <Route
           path="/reset-password"
           element={<ResetPassword />}
         />
 
-
-        {/* ================= PRODUCT DETAILS ================= */}
-
+        {/* PRODUCT DETAILS */}
         <Route
           path="/product/:id"
           element={<ProductDetails />}
         />
 
-
-        {/* ================= ABOUT ================= */}
-
+        {/* ABOUT */}
         <Route
           path="/about"
           element={<About />}
         />
 
-
-        {/* ================= PRODUCTS SEARCH ================= */}
-
+        {/* PRODUCTS SEARCH */}
         <Route
           path="/products"
           element={<Home />}
         />
 
+        {/* ADMIN */}
+        <Route
+          path="/admin"
+          element={<AdminDashboard />}
+        />
+
       </Routes>
-
     </div>
-
   );
 }
-
 
 // =====================================================
 // APP
 // =====================================================
 
 function App() {
-
   return (
-
     <BrowserRouter>
 
       {/* Automatically scroll to top when URL changes */}
       <ScrollToTop />
 
-
       <CartProvider>
 
-        {/* Navbar stays visible on all pages */}
+        {/* Navbar */}
         <Navbar />
-
 
         {/* Application Routes */}
         <AnimatedRoutes />
@@ -184,10 +155,7 @@ function App() {
       </CartProvider>
 
     </BrowserRouter>
-
   );
-
 }
-
 
 export default App;
