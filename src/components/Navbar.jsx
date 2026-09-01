@@ -2,13 +2,12 @@ import {
   Search,
   ShoppingCart,
   User,
+  LogOut,
   Menu,
   X,
-  LogOut,
 } from "lucide-react";
 
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
 import {
   Link,
   useLocation,
@@ -17,157 +16,149 @@ import {
 
 import { useCart } from "../context/CartContext";
 import CartPanel from "./CartPanel";
+
+import { supabase } from "../lib/supabaseClient";
+
 import "./Navbar.css";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
 
+  // ================= SEARCH =================
+
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchText, setSearchText] = useState("");
+
+  // ================= AUTH =================
+
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
   const { cartCount } = useCart();
 
   const location = useLocation();
   const navigate = useNavigate();
 
-  // =====================================================
-  // LOGIN STATUS
-  // =====================================================
+  // ================= AUTH STATE =================
 
-  const isLoggedIn =
-    localStorage.getItem("isLoggedIn") === "true";
+  useEffect(() => {
+    let mounted = true;
 
+    const getCurrentUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-  // =====================================================
-  // HOME BUTTON
-  // =====================================================
+      if (mounted) {
+        setUser(user);
+        setAuthLoading(false);
+      }
+    };
 
-  const handleHomeClick = () => {
-    setMenuOpen(false);
+    getCurrentUser();
 
-    if (location.pathname === "/") {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (mounted) {
+          setUser(session?.user ?? null);
+          setAuthLoading(false);
+        }
+      }
+    );
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  // ================= LOGOUT =================
+
+  const handleLogout = async () => {
+    const { error } =
+      await supabase.auth.signOut();
+
+    if (error) {
+      console.error(
+        "Logout error:",
+        error
+      );
 
       return;
     }
 
+    setMenuOpen(false);
     navigate("/");
-
-    setTimeout(() => {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    }, 300);
   };
 
-
-  // =====================================================
-  // SECTION NAVIGATION
-  // =====================================================
+  // ================= NAVIGATION =================
 
   const handleSectionClick = (section) => {
     setMenuOpen(false);
 
     if (location.pathname === "/") {
-      const element =
-        document.getElementById(section);
-
-      if (element) {
-        element.scrollIntoView({
+      document
+        .getElementById(section)
+        ?.scrollIntoView({
           behavior: "smooth",
-          block: "start",
         });
-      }
+    } else {
+      navigate(`/#${section}`);
+    }
+  };
 
+  // ================= SEARCH =================
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    const query = searchText.trim();
+
+    if (!query) {
       return;
     }
 
-    navigate("/");
+    console.log(
+      "Searching for:",
+      query
+    );
 
-    setTimeout(() => {
-      const element =
-        document.getElementById(section);
+    // Later we can connect this to
+    // Supabase products.
 
-      if (element) {
-        element.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
-    }, 300);
+    navigate(
+      `/products?search=${encodeURIComponent(
+        query
+      )}`
+    );
+
+    setSearchOpen(false);
   };
-
-
-  // =====================================================
-  // LOGO CLICK
-  // =====================================================
-
-  const handleLogoClick = () => {
-    setMenuOpen(false);
-
-    if (location.pathname === "/") {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    }
-  };
-
-
-  // =====================================================
-  // LOGIN
-  // =====================================================
-
-  const handleLogin = () => {
-    setMenuOpen(false);
-
-    navigate("/login");
-  };
-
-
-  // =====================================================
-  // LOGOUT
-  // =====================================================
-
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("userEmail");
-
-    setMenuOpen(false);
-
-    alert("You have been logged out.");
-
-    navigate("/");
-  };
-
 
   return (
     <nav className="navbar">
 
+      {/* ================= NAVBAR ================= */}
+
       <div className="navbar-container">
 
-        {/* =================================================
-            LOGO
-        ================================================= */}
+        {/* LOGO */}
 
         <Link
           to="/"
           className="logo"
-          onClick={handleLogoClick}
-          style={{
-            textDecoration: "none",
-          }}
+          onClick={() =>
+            setMenuOpen(false)
+          }
         >
           <span>MODZ</span>
           <strong>LAB</strong>
         </Link>
 
-
-        {/* =================================================
-            NAVIGATION LINKS
-        ================================================= */}
+        {/* NAVIGATION */}
 
         <div
           className={`nav-links ${
@@ -175,41 +166,36 @@ function Navbar() {
           }`}
         >
 
-          {/* HOME */}
-
-          <button
-            type="button"
-            onClick={handleHomeClick}
+          <Link
+            to="/"
+            onClick={() =>
+              setMenuOpen(false)
+            }
           >
             Home
-          </button>
-
-
-          {/* PRODUCTS */}
+          </Link>
 
           <button
             type="button"
             onClick={() =>
-              handleSectionClick("products")
+              handleSectionClick(
+                "products"
+              )
             }
           >
             Products
           </button>
 
-
-          {/* CATEGORIES */}
-
           <button
             type="button"
             onClick={() =>
-              handleSectionClick("categories")
+              handleSectionClick(
+                "categories"
+              )
             }
           >
             Categories
           </button>
-
-
-          {/* ABOUT */}
 
           <button
             type="button"
@@ -220,13 +206,12 @@ function Navbar() {
             About
           </button>
 
-
-          {/* CONTACT */}
-
           <button
             type="button"
             onClick={() =>
-              handleSectionClick("contact")
+              handleSectionClick(
+                "contact"
+              )
             }
           >
             Contact
@@ -234,23 +219,26 @@ function Navbar() {
 
         </div>
 
-
-        {/* =================================================
-            RIGHT SIDE ACTIONS
-        ================================================= */}
+        {/* RIGHT SIDE */}
 
         <div className="nav-actions">
 
-          {/* SEARCH */}
+          {/* SEARCH BUTTON */}
 
           <button
             type="button"
-            className="icon-btn"
+            className="icon-btn search-btn"
             title="Search"
+            onClick={() =>
+              setSearchOpen(!searchOpen)
+            }
           >
-            <Search size={21} />
+            {searchOpen ? (
+              <X size={21} />
+            ) : (
+              <Search size={21} />
+            )}
           </button>
-
 
           {/* CART */}
 
@@ -267,53 +255,35 @@ function Navbar() {
             <span className="cart-count">
               {cartCount}
             </span>
-
           </button>
 
+          {/* LOGIN / LOGOUT */}
 
-          {/* =================================================
-              LOGIN / LOGOUT
-          ================================================= */}
-
-          {!isLoggedIn ? (
-
-            <button
-              type="button"
-              className="login-btn"
-              onClick={handleLogin}
-            >
-
-              <User size={18} />
-
-              <span>
-                Login
-              </span>
-
-            </button>
-
-          ) : (
-
-            <button
-              type="button"
-              className="login-btn"
-              onClick={handleLogout}
-              title="Logout"
-            >
-
-              <LogOut size={18} />
-
-              <span>
-                Logout
-              </span>
-
-            </button>
-
+          {!authLoading && (
+            user ? (
+              <button
+                type="button"
+                className="login-btn"
+                onClick={handleLogout}
+              >
+                <LogOut size={18} />
+                <span>Logout</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="login-btn"
+                onClick={() =>
+                  navigate("/login")
+                }
+              >
+                <User size={18} />
+                <span>Login</span>
+              </button>
+            )
           )}
 
-
-          {/* =================================================
-              MOBILE MENU
-          ================================================= */}
+          {/* MOBILE MENU */}
 
           <button
             type="button"
@@ -322,23 +292,62 @@ function Navbar() {
               setMenuOpen(!menuOpen)
             }
           >
-
             {menuOpen ? (
               <X size={25} />
             ) : (
               <Menu size={25} />
             )}
-
           </button>
 
         </div>
 
       </div>
 
+      {/* ================= SEARCH BAR ================= */}
 
-      {/* =================================================
-          CART PANEL
-      ================================================= */}
+      {searchOpen && (
+        <div className="search-container">
+
+          <form
+            className="search-form"
+            onSubmit={handleSearch}
+          >
+
+            <Search
+              size={24}
+              className="search-icon"
+            />
+
+            <input
+              type="text"
+              value={searchText}
+              onChange={(e) =>
+                setSearchText(
+                  e.target.value
+                )
+              }
+              placeholder="Search for bike accessories..."
+              autoFocus
+            />
+
+            {searchText && (
+              <button
+                type="button"
+                className="search-clear"
+                onClick={() =>
+                  setSearchText("")
+                }
+              >
+                <X size={20} />
+              </button>
+            )}
+
+          </form>
+
+        </div>
+      )}
+
+      {/* CART PANEL */}
 
       <CartPanel
         isOpen={cartOpen}

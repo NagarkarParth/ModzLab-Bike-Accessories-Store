@@ -194,6 +194,15 @@
 
 
 /* =====================================================
+   SEARCH BUTTON
+===================================================== */
+
+.search-btn {
+  position: relative;
+}
+
+
+/* =====================================================
    CART
 ===================================================== */
 
@@ -232,7 +241,7 @@
 
 
 /* =====================================================
-   LOGIN BUTTON
+   LOGIN / LOGOUT BUTTON
 ===================================================== */
 
 .login-btn {
@@ -270,6 +279,179 @@
   border-color: #b80500;
 
   color: #ffffff;
+}
+
+
+/* =====================================================
+   SEARCH BAR CONTAINER
+===================================================== */
+
+.search-container {
+  width: 100%;
+
+  padding: 18px 40px 22px;
+
+  background: #111111;
+
+  border-top: 1px solid #292929;
+
+  border-bottom: 1px solid #292929;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  box-sizing: border-box;
+
+  animation: searchSlideDown 0.2s ease;
+}
+
+
+/* =====================================================
+   SEARCH BAR
+===================================================== */
+
+.search-form {
+  width: min(100%, 1000px);
+
+  height: 58px;
+
+  display: flex;
+
+  align-items: center;
+
+  box-sizing: border-box;
+
+  padding: 0 20px;
+
+  background: #ffffff;
+
+  border-radius: 30px;
+
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.25);
+
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+/* =====================================================
+   SEARCH ICON
+===================================================== */
+
+.search-form .search-icon {
+  flex-shrink: 0;
+
+  margin-right: 14px;
+
+  color: #e10600;
+}
+
+
+/* =====================================================
+   SEARCH INPUT
+===================================================== */
+
+.search-form input {
+  flex: 1;
+
+  width: 100%;
+
+  min-width: 0;
+
+  border: none;
+
+  outline: none;
+
+  background: transparent;
+
+  color: #111111;
+
+  font-size: 18px;
+
+  font-family: inherit;
+}
+
+
+/* =====================================================
+   SEARCH PLACEHOLDER
+===================================================== */
+
+.search-form input::placeholder {
+  color: #777777;
+
+  opacity: 1;
+}
+
+
+/* =====================================================
+   SEARCH FOCUS
+===================================================== */
+
+.search-form:focus-within {
+  box-shadow:
+    0 0 0 2px #e10600,
+    0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+
+/* =====================================================
+   CLEAR SEARCH BUTTON
+===================================================== */
+
+.search-clear {
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: transparent;
+
+  color: #555555;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.search-clear:hover {
+  background: #eeeeee;
+
+  color: #111111;
+}
+
+
+/* =====================================================
+   SEARCH ANIMATION
+===================================================== */
+
+@keyframes searchSlideDown {
+
+  from {
+    opacity: 0;
+
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translateY(0);
+  }
+
 }
 
 
@@ -328,6 +510,19 @@
 
     padding: 0;
   }
+
+  /* SEARCH */
+
+  .search-container {
+    padding-left: 25px;
+
+    padding-right: 25px;
+  }
+
+  .search-form {
+    max-width: 800px;
+  }
+
 }
 
 
@@ -461,6 +656,49 @@
 
 
   /* =================================================
+     MOBILE SEARCH
+  ================================================= */
+
+  .search-container {
+    position: fixed;
+
+    top: 62px;
+
+    left: 0;
+
+    width: 100%;
+
+    padding: 12px 15px 16px;
+
+    background: #111111;
+
+    box-shadow:
+      0 8px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  .search-form {
+    width: 100%;
+
+    height: 52px;
+
+    padding: 0 16px;
+
+    border-radius: 28px;
+  }
+
+  .search-form .search-icon {
+    width: 21px;
+    height: 21px;
+
+    margin-right: 10px;
+  }
+
+  .search-form input {
+    font-size: 16px;
+  }
+
+
+  /* =================================================
      MENU BUTTON
   ================================================= */
 
@@ -470,6 +708,7 @@
     width: 38px;
     height: 38px;
   }
+
 }
 
 
@@ -500,4 +739,24 @@
     width: 36px;
     height: 36px;
   }
+
+
+  /* SEARCH */
+
+  .search-container {
+    padding-left: 10px;
+
+    padding-right: 10px;
+  }
+
+  .search-form {
+    height: 50px;
+
+    padding: 0 14px;
+  }
+
+  .search-form input {
+    font-size: 15px;
+  }
+
 }
