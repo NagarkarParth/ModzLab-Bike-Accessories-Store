@@ -1,0 +1,563 @@
+/* =====================================================
+   MODZLAB PROFILE PAGE
+===================================================== */
+
+.profile-page {
+  width: 100%;
+  min-height: calc(100vh - 70px);
+
+  background: #080808;
+  color: #ffffff;
+
+  padding: 55px 30px 80px;
+
+  overflow-x: hidden;
+}
+
+
+/* =====================================================
+   CONTAINER
+===================================================== */
+
+.profile-container {
+  width: 100%;
+  max-width: 1180px;
+
+  margin: 0 auto;
+}
+
+
+/* =====================================================
+   PROFILE HEADER
+===================================================== */
+
+.profile-header {
+  margin-bottom: 35px;
+}
+
+.profile-label {
+  display: block;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  color: #ffffff;
+
+  margin-bottom: 8px;
+
+  letter-spacing: 0.3px;
+}
+
+.profile-header h1 {
+  margin: 0;
+
+  font-size: 42px;
+  line-height: 1.15;
+
+  font-weight: 800;
+
+  letter-spacing: -1px;
+}
+
+.profile-header h1 span {
+  color: #ed1111;
+}
+
+.profile-header h1 .wave {
+  color: #ffffff;
+
+  font-size: 34px;
+
+  margin-left: 5px;
+}
+
+.profile-header p {
+  margin: 12px 0 0;
+
+  color: #a9a9a9;
+
+  font-size: 17px;
+}
+
+
+/* =====================================================
+   PERSONAL INFORMATION
+===================================================== */
+
+.personal-information {
+  width: 100%;
+
+  min-height: 150px;
+
+  background: #151515;
+
+  border: 1px solid #e50914;
+
+  border-radius: 16px;
+
+  padding: 28px 30px;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 18px;
+
+  margin-bottom: 28px;
+
+  box-shadow:
+    0 10px 35px rgba(0, 0, 0, 0.35);
+}
+
+.personal-icon {
+  width: 48px;
+  height: 48px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #ffffff;
+
+  background: #222222;
+
+  border-radius: 12px;
+}
+
+.personal-content {
+  flex: 1;
+}
+
+.personal-content h2 {
+  margin: 0;
+
+  font-size: 25px;
+  font-weight: 750;
+}
+
+.personal-description {
+  margin: 4px 0 18px;
+
+  color: #999999;
+
+  font-size: 15px;
+}
+
+.personal-name {
+  display: flex;
+  align-items: center;
+
+  gap: 18px;
+
+  font-size: 16px;
+}
+
+.info-label {
+  color: #999999;
+
+  min-width: 55px;
+}
+
+.info-value {
+  color: #ffffff;
+
+  font-weight: 600;
+}
+
+
+/* =====================================================
+   PROFILE OPTIONS
+===================================================== */
+
+.profile-options {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 18px;
+
+  margin-bottom: 28px;
+}
+
+
+/* =====================================================
+   OPTION CARD
+===================================================== */
+
+.profile-option {
+  width: 100%;
+
+  min-height: 165px;
+
+  padding: 25px;
+
+  background: #151515;
+
+  border: 1px solid #2b2b2b;
+
+  border-radius: 14px;
+
+  color: #ffffff;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: space-between;
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.profile-option:hover {
+  transform: translateY(-5px);
+
+  border-color: #e50914;
+
+  background: #1a1a1a;
+
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.45);
+}
+
+
+/* =====================================================
+   OPTION ICON
+===================================================== */
+
+.option-icon {
+  width: 45px;
+  height: 45px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #ffffff;
+
+  background: #222222;
+
+  border-radius: 10px;
+
+  margin-bottom: 18px;
+
+  transition:
+    background 0.25s ease,
+    color 0.25s ease;
+}
+
+.profile-option:hover .option-icon {
+  background: #e50914;
+
+  color: #ffffff;
+}
+
+
+/* =====================================================
+   OPTION CONTENT
+===================================================== */
+
+.option-content {
+  position: relative;
+}
+
+.option-content h3 {
+  margin: 0 0 6px;
+
+  font-size: 19px;
+
+  font-weight: 700;
+}
+
+.option-content p {
+  margin: 0;
+
+  color: #999999;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+.option-arrow {
+  display: block;
+
+  margin-top: 14px;
+
+  font-size: 20px;
+
+  color: #e50914;
+
+  font-weight: 600;
+}
+
+
+/* =====================================================
+   LOGOUT BUTTON
+===================================================== */
+
+.profile-logout-btn {
+  width: 100%;
+
+  height: 52px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #e50914;
+
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  font-size: 16px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+
+  margin-bottom: 18px;
+}
+
+.profile-logout-btn:hover {
+  background: #c90811;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 25px rgba(229, 9, 20, 0.25);
+}
+
+
+/* =====================================================
+   BACK TO HOME
+===================================================== */
+
+.profile-back-home {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  color: #ffffff;
+
+  text-decoration: none;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.profile-back-home:hover {
+  color: #e50914;
+
+  transform: translateX(-3px);
+}
+
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+.profile-loading {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  min-height: calc(100vh - 70px);
+}
+
+.profile-loader {
+  color: #ffffff;
+
+  font-size: 18px;
+}
+
+
+/* =====================================================
+   NOT LOGGED IN
+===================================================== */
+
+.profile-not-logged {
+  min-height: calc(100vh - 150px);
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex-direction: column;
+
+  text-align: center;
+}
+
+.profile-not-logged svg {
+  color: #e50914;
+
+  margin-bottom: 15px;
+}
+
+.profile-not-logged h2 {
+  margin: 0 0 8px;
+
+  font-size: 28px;
+}
+
+.profile-not-logged p {
+  color: #999999;
+
+  margin: 0 0 20px;
+}
+
+.profile-login-btn {
+  border: none;
+
+  background: #e50914;
+
+  color: #ffffff;
+
+  padding: 12px 30px;
+
+  border-radius: 8px;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 900px) {
+
+  .profile-page {
+    padding: 45px 22px 70px;
+  }
+
+  .profile-header h1 {
+    font-size: 36px;
+  }
+
+  .profile-options {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-option {
+    min-height: 140px;
+  }
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 600px) {
+
+  .profile-page {
+    padding: 35px 16px 60px;
+  }
+
+  .profile-header {
+    margin-bottom: 25px;
+  }
+
+  .profile-header h1 {
+    font-size: 30px;
+
+    letter-spacing: -0.5px;
+  }
+
+  .profile-header h1 .wave {
+    font-size: 27px;
+  }
+
+  .profile-header p {
+    font-size: 15px;
+
+    line-height: 1.5;
+  }
+
+  .personal-information {
+    padding: 22px 18px;
+
+    gap: 13px;
+  }
+
+  .personal-icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .personal-content h2 {
+    font-size: 21px;
+  }
+
+  .personal-name {
+    gap: 12px;
+  }
+
+  .profile-option {
+    padding: 21px;
+
+    min-height: 145px;
+  }
+
+  .profile-logout-btn {
+    height: 50px;
+  }
+}
+
+
+/* =====================================================
+   SMALL MOBILE
+===================================================== */
+
+@media (max-width: 400px) {
+
+  .profile-header h1 {
+    font-size: 27px;
+  }
+
+  .personal-information {
+    padding: 20px 15px;
+  }
+
+  .personal-content h2 {
+    font-size: 19px;
+  }
+
+  .info-label {
+    min-width: 45px;
+  }
+
+  .info-value {
+    font-size: 15px;
+  }
+}

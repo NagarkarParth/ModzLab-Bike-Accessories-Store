@@ -29,6 +29,26 @@
   padding-top: 70px;
 
   overflow-x: hidden;
+
+  /* PAGE TRANSITION */
+  animation: pageTransition 0.5s ease-out;
+}
+
+
+/* =====================================================
+   PAGE TRANSITION ANIMATION
+===================================================== */
+
+@keyframes pageTransition {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 
@@ -40,7 +60,10 @@
 
   .page-wrapper {
     padding-top: 70px;
+
+    animation: pageTransition 0.5s ease-out;
   }
+
 }
 
 
@@ -57,7 +80,10 @@
     padding-top: 62px;
 
     overflow-x: hidden;
+
+    animation: pageTransition 0.45s ease-out;
   }
+
 }
 
 
@@ -69,5 +95,8 @@
 
   .page-wrapper {
     padding-top: 62px;
+
+    animation: pageTransition 0.45s ease-out;
   }
+
 }

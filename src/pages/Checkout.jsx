@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import {
   MapPin,
   Phone,
@@ -21,10 +22,13 @@ function Checkout() {
 
   const {
     cartItems,
-    cartTotal,
     getCartTotal,
     clearCart,
   } = useCart();
+
+  // ==========================================
+  // FORM DATA
+  // ==========================================
 
   const [formData, setFormData] = useState({
     name: "",
@@ -37,17 +41,98 @@ function Checkout() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [userLoading, setUserLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+
+  // ==========================================
+  // GET LOGGED-IN USER
+  // ==========================================
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.getUser();
+
+        if (error) {
+          console.error("Authentication error:", error);
+
+          setErrorMessage(
+            "Unable to verify your account. Please login again."
+          );
+
+          setUserLoading(false);
+          return;
+        }
+
+        // ======================================
+        // USER NOT LOGGED IN
+        // ======================================
+
+        if (!user) {
+          setErrorMessage(
+            "Please login before proceeding to checkout."
+          );
+
+          setUserLoading(false);
+
+          return;
+        }
+
+        // ======================================
+        // GET USER INFORMATION
+        // ======================================
+
+        const userName =
+          user.user_metadata?.full_name ||
+          user.user_metadata?.name ||
+          "";
+
+        const userEmail = user.email || "";
+
+        // ======================================
+        // PREFILL USER INFORMATION
+        // ======================================
+
+        setFormData((currentData) => ({
+          ...currentData,
+          name: currentData.name || userName,
+          email: currentData.email || userEmail,
+        }));
+
+        setUserLoading(false);
+      } catch (error) {
+        console.error("User loading error:", error);
+
+        setErrorMessage(
+          "Something went wrong while loading your account."
+        );
+
+        setUserLoading(false);
+      }
+    };
+
+    loadUser();
+  }, []);
 
   // ==========================================
   // HANDLE INPUT
   // ==========================================
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setFormData((currentData) => ({
+      ...currentData,
+      [name]: value,
+    }));
+
+    // Remove error when user starts editing
+    if (errorMessage) {
+      setErrorMessage("");
+    }
   };
 
   // ==========================================
@@ -60,31 +145,79 @@ function Checkout() {
     setErrorMessage("");
     setLoading(true);
 
+    let createdOrder = null;
+
     try {
-      // Check Supabase authentication
+      // ======================================
+      // 1. CHECK AUTHENTICATION
+      // ======================================
+
       const {
         data: { user },
         error: userError,
       } = await supabase.auth.getUser();
 
-      if (userError || !user) {
+      if (userError) {
+        throw new Error(
+          "Unable to verify your login session."
+        );
+      }
+
+      if (!user) {
         setErrorMessage(
           "Please login before placing your order."
         );
+
         setLoading(false);
+
+        navigate("/login");
+
         return;
       }
-
-      if (cartItems.length === 0) {
-        setErrorMessage("Your cart is empty.");
-        setLoading(false);
-        return;
-      }
-
-      const totalAmount = getCartTotal();
 
       // ======================================
-      // CREATE ORDER
+      // 2. CHECK CART
+      // ======================================
+
+      if (!cartItems || cartItems.length === 0) {
+        setErrorMessage("Your cart is empty.");
+
+        setLoading(false);
+
+        return;
+      }
+
+      // ======================================
+      // 3. VALIDATE FORM
+      // ======================================
+
+      if (
+        !formData.name.trim() ||
+        !formData.mobile.trim() ||
+        !formData.email.trim() ||
+        !formData.address.trim() ||
+        !formData.city.trim() ||
+        !formData.pincode.trim()
+      ) {
+        setErrorMessage(
+          "Please fill in all delivery details."
+        );
+
+        setLoading(false);
+
+        return;
+      }
+
+      // ======================================
+      // 4. CALCULATE TOTAL
+      // ======================================
+
+      const totalAmount = Number(
+        getCartTotal()
+      );
+
+      // ======================================
+      // 5. CREATE ORDER
       // ======================================
 
       const { data: order, error: orderError } =
@@ -92,15 +225,35 @@ function Checkout() {
           .from("orders")
           .insert([
             {
+              // IMPORTANT:
+              // This connects the order
+              // to the logged-in user.
               user_id: user.id,
-              customer_name: formData.name.trim(),
-              mobile: formData.mobile.trim(),
-              email: formData.email.trim(),
-              address: formData.address.trim(),
-              city: formData.city.trim(),
-              pincode: formData.pincode.trim(),
-              payment_method: formData.paymentMethod,
-              total_amount: totalAmount,
+
+              customer_name:
+                formData.name.trim(),
+
+              mobile:
+                formData.mobile.trim(),
+
+              email:
+                formData.email.trim(),
+
+              address:
+                formData.address.trim(),
+
+              city:
+                formData.city.trim(),
+
+              pincode:
+                formData.pincode.trim(),
+
+              payment_method:
+                formData.paymentMethod,
+
+              total_amount:
+                totalAmount,
+
               status: "Pending",
             },
           ])
@@ -108,22 +261,46 @@ function Checkout() {
           .single();
 
       if (orderError) {
-        throw new Error(orderError.message);
+        console.error(
+          "Order creation error:",
+          orderError
+        );
+
+        throw new Error(
+          orderError.message ||
+            "Unable to create your order."
+        );
       }
 
+      createdOrder = order;
+
       // ======================================
-      // CREATE ORDER ITEMS
+      // 6. CREATE ORDER ITEMS
       // ======================================
 
-      const orderItems = cartItems.map((item) => ({
-        order_id: order.id,
-        product_id: item.id,
-        product_name: item.name,
-        quantity: Number(item.quantity),
-        unit_price: Number(item.price),
-        subtotal:
-          Number(item.price) * Number(item.quantity),
-      }));
+      const orderItems = cartItems.map(
+        (item) => ({
+          // Connect item to order
+          order_id: order.id,
+
+          // Product ownership/reference
+          product_id: item.id,
+
+          // Save product name at time of purchase
+          product_name: item.name,
+
+          // Quantity
+          quantity: Number(item.quantity),
+
+          // Price at time of purchase
+          unit_price: Number(item.price),
+
+          // Quantity × price
+          subtotal:
+            Number(item.price) *
+            Number(item.quantity),
+        })
+      );
 
       const { error: itemsError } =
         await supabase
@@ -131,26 +308,58 @@ function Checkout() {
           .insert(orderItems);
 
       if (itemsError) {
-        // Remove the order if order items failed
+        console.error(
+          "Order items error:",
+          itemsError
+        );
+
+        // ====================================
+        // ROLLBACK ORDER
+        // ====================================
+
         await supabase
           .from("orders")
           .delete()
-          .eq("id", order.id);
+          .eq("id", order.id)
+          .eq("user_id", user.id);
 
-        throw new Error(itemsError.message);
+        createdOrder = null;
+
+        throw new Error(
+          itemsError.message ||
+            "Unable to save your order items."
+        );
       }
 
       // ======================================
-      // SUCCESS
+      // 7. SUCCESS
       // ======================================
 
-      alert("Order placed successfully!");
+      console.log(
+        "Order created successfully:",
+        order.id
+      );
+
+      alert(
+        "Order placed successfully!"
+      );
+
+      // ======================================
+      // 8. CLEAR CART
+      // ======================================
 
       clearCart();
 
+      // ======================================
+      // 9. GO TO HOME
+      // ======================================
+
       navigate("/");
     } catch (error) {
-      console.error("Checkout error:", error);
+      console.error(
+        "Checkout error:",
+        error
+      );
 
       setErrorMessage(
         error.message ||
@@ -160,6 +369,27 @@ function Checkout() {
       setLoading(false);
     }
   };
+
+  // ==========================================
+  // USER LOADING
+  // ==========================================
+
+  if (userLoading) {
+    return (
+      <div className="checkout-page">
+        <div className="checkout-empty">
+          <ShoppingBag size={60} />
+
+          <h2>Loading Checkout...</h2>
+
+          <p>
+            Please wait while we verify your
+            account.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // ==========================================
   // EMPTY CART
@@ -174,15 +404,17 @@ function Checkout() {
           <h2>Your Cart is Empty</h2>
 
           <p>
-            Add some products before proceeding to
-            checkout.
+            Add some products before proceeding
+            to checkout.
           </p>
 
           <button
+            type="button"
             className="checkout-back-btn"
             onClick={() => navigate("/")}
           >
             <ArrowLeft size={18} />
+
             Continue Shopping
           </button>
         </div>
@@ -204,21 +436,26 @@ function Checkout() {
 
         <div className="checkout-header">
           <div>
+
             <button
               type="button"
               className="checkout-back-link"
               onClick={() => navigate("/")}
             >
               <ArrowLeft size={17} />
+
               Continue Shopping
             </button>
 
-            <h1>Checkout</h1>
+            <h1>
+              Checkout
+            </h1>
 
             <p>
               Complete your order and get your
               accessories delivered.
             </p>
+
           </div>
         </div>
 
@@ -234,30 +471,47 @@ function Checkout() {
 
           <div className="checkout-form-card">
 
+            {/* DELIVERY HEADER */}
+
             <div className="checkout-card-header">
+
               <div className="checkout-icon">
                 <MapPin size={21} />
               </div>
 
               <div>
-                <h2>Delivery Information</h2>
+
+                <h2>
+                  Delivery Information
+                </h2>
+
                 <p>
                   Enter your delivery details
                 </p>
+
               </div>
+
             </div>
+
+            {/* FORM */}
 
             <form
               id="checkout-form"
               onSubmit={handleSubmit}
             >
 
-              {/* NAME */}
+              {/* ================================
+                  NAME
+              ================================= */}
 
               <div className="checkout-input-group">
-                <label>Full Name</label>
+
+                <label>
+                  Full Name
+                </label>
 
                 <div className="checkout-input-wrapper">
+
                   <User size={19} />
 
                   <input
@@ -268,17 +522,25 @@ function Checkout() {
                     onChange={handleChange}
                     required
                   />
+
                 </div>
+
               </div>
 
-              {/* MOBILE + EMAIL */}
+              {/* ================================
+                  MOBILE + EMAIL
+              ================================= */}
 
               <div className="checkout-two-columns">
 
                 <div className="checkout-input-group">
-                  <label>Mobile Number</label>
+
+                  <label>
+                    Mobile Number
+                  </label>
 
                   <div className="checkout-input-wrapper">
+
                     <Phone size={19} />
 
                     <input
@@ -291,13 +553,19 @@ function Checkout() {
                       maxLength="10"
                       required
                     />
+
                   </div>
+
                 </div>
 
                 <div className="checkout-input-group">
-                  <label>Email Address</label>
+
+                  <label>
+                    Email Address
+                  </label>
 
                   <div className="checkout-input-wrapper">
+
                     <Mail size={19} />
 
                     <input
@@ -308,15 +576,22 @@ function Checkout() {
                       onChange={handleChange}
                       required
                     />
+
                   </div>
+
                 </div>
 
               </div>
 
-              {/* ADDRESS */}
+              {/* ================================
+                  ADDRESS
+              ================================= */}
 
               <div className="checkout-input-group">
-                <label>Delivery Address</label>
+
+                <label>
+                  Delivery Address
+                </label>
 
                 <textarea
                   name="address"
@@ -326,14 +601,20 @@ function Checkout() {
                   onChange={handleChange}
                   required
                 />
+
               </div>
 
-              {/* CITY + PINCODE */}
+              {/* ================================
+                  CITY + PINCODE
+              ================================= */}
 
               <div className="checkout-two-columns">
 
                 <div className="checkout-input-group">
-                  <label>City</label>
+
+                  <label>
+                    City
+                  </label>
 
                   <input
                     type="text"
@@ -343,10 +624,14 @@ function Checkout() {
                     onChange={handleChange}
                     required
                   />
+
                 </div>
 
                 <div className="checkout-input-group">
-                  <label>Pincode</label>
+
+                  <label>
+                    Pincode
+                  </label>
 
                   <input
                     type="text"
@@ -358,26 +643,36 @@ function Checkout() {
                     maxLength="6"
                     required
                   />
+
                 </div>
 
               </div>
 
-              {/* PAYMENT */}
+              {/* ================================
+                  PAYMENT
+              ================================= */}
 
               <div className="payment-section">
 
                 <div className="checkout-card-header payment-header">
+
                   <div className="checkout-icon">
                     <CreditCard size={21} />
                   </div>
 
                   <div>
-                    <h2>Payment Method</h2>
+
+                    <h2>
+                      Payment Method
+                    </h2>
+
                     <p>
-                      Choose your preferred payment
-                      method
+                      Choose your preferred
+                      payment method
                     </p>
+
                   </div>
+
                 </div>
 
                 {/* CASH ON DELIVERY */}
@@ -390,6 +685,7 @@ function Checkout() {
                       : ""
                   }`}
                 >
+
                   <input
                     type="radio"
                     name="paymentMethod"
@@ -402,10 +698,13 @@ function Checkout() {
                   />
 
                   <div className="payment-option-icon">
+
                     <Truck size={21} />
+
                   </div>
 
                   <div className="payment-option-content">
+
                     <strong>
                       Cash on Delivery
                     </strong>
@@ -413,7 +712,9 @@ function Checkout() {
                     <span>
                       Pay when your order arrives
                     </span>
+
                   </div>
+
                 </label>
 
                 {/* ONLINE PAYMENT */}
@@ -426,6 +727,7 @@ function Checkout() {
                       : ""
                   }`}
                 >
+
                   <input
                     type="radio"
                     name="paymentMethod"
@@ -438,10 +740,13 @@ function Checkout() {
                   />
 
                   <div className="payment-option-icon">
+
                     <CreditCard size={21} />
+
                   </div>
 
                   <div className="payment-option-content">
+
                     <strong>
                       Online Payment
                     </strong>
@@ -449,12 +754,16 @@ function Checkout() {
                     <span>
                       Pay securely online
                     </span>
+
                   </div>
+
                 </label>
 
               </div>
 
-              {/* ERROR */}
+              {/* ================================
+                  ERROR
+              ================================= */}
 
               {errorMessage && (
                 <div className="checkout-error">
@@ -462,24 +771,30 @@ function Checkout() {
                 </div>
               )}
 
-              {/* PLACE ORDER */}
+              {/* ================================
+                  PLACE ORDER
+              ================================= */}
 
               <button
                 type="submit"
                 className="place-order-btn"
                 disabled={loading}
               >
+
                 {loading ? (
                   <>
                     <span className="checkout-spinner"></span>
+
                     Placing Order...
                   </>
                 ) : (
                   <>
                     <ShoppingBag size={19} />
+
                     Place Order
                   </>
                 )}
+
               </button>
 
             </form>
@@ -493,8 +808,12 @@ function Checkout() {
           <div className="order-summary-card">
 
             <div className="summary-header">
+
               <div>
-                <h2>Order Summary</h2>
+
+                <h2>
+                  Order Summary
+                </h2>
 
                 <p>
                   {cartItems.length}{" "}
@@ -503,9 +822,11 @@ function Checkout() {
                     : "items"}{" "}
                   in your cart
                 </p>
+
               </div>
 
               <ShoppingBag size={23} />
+
             </div>
 
             {/* PRODUCTS */}
@@ -513,11 +834,14 @@ function Checkout() {
             <div className="summary-products">
 
               {cartItems.map((item) => (
+
                 <div
                   className="summary-product"
                   key={item.id}
                 >
+
                   <div className="summary-product-image">
+
                     {item.image ? (
                       <img
                         src={item.image}
@@ -526,10 +850,14 @@ function Checkout() {
                     ) : (
                       <ShoppingBag size={25} />
                     )}
+
                   </div>
 
                   <div className="summary-product-info">
-                    <h3>{item.name}</h3>
+
+                    <h3>
+                      {item.name}
+                    </h3>
 
                     <p>
                       Quantity: {item.quantity}
@@ -537,10 +865,11 @@ function Checkout() {
 
                     <span>
                       ₹
-                      {Number(item.price).toLocaleString(
-                        "en-IN"
-                      )}
+                      {Number(
+                        item.price
+                      ).toLocaleString("en-IN")}
                     </span>
+
                   </div>
 
                   <strong>
@@ -550,17 +879,24 @@ function Checkout() {
                       Number(item.quantity)
                     ).toLocaleString("en-IN")}
                   </strong>
+
                 </div>
+
               ))}
 
             </div>
 
-            {/* TOTAL */}
+            {/* DIVIDER */}
 
             <div className="summary-divider"></div>
 
+            {/* SUBTOTAL */}
+
             <div className="summary-row">
-              <span>Subtotal</span>
+
+              <span>
+                Subtotal
+              </span>
 
               <strong>
                 ₹
@@ -568,20 +904,34 @@ function Checkout() {
                   getCartTotal()
                 ).toLocaleString("en-IN")}
               </strong>
+
             </div>
 
+            {/* DELIVERY */}
+
             <div className="summary-row">
-              <span>Delivery</span>
+
+              <span>
+                Delivery
+              </span>
 
               <strong className="free-text">
                 FREE
               </strong>
+
             </div>
+
+            {/* DIVIDER */}
 
             <div className="summary-divider"></div>
 
+            {/* TOTAL */}
+
             <div className="summary-total">
-              <span>Total</span>
+
+              <span>
+                Total
+              </span>
 
               <strong>
                 ₹
@@ -589,26 +939,36 @@ function Checkout() {
                   getCartTotal()
                 ).toLocaleString("en-IN")}
               </strong>
+
             </div>
 
             {/* SECURE CHECKOUT */}
 
             <div className="secure-checkout">
-              <span>🔒</span>
+
+              <span>
+                🔒
+              </span>
 
               <div>
-                <strong>Secure Checkout</strong>
+
+                <strong>
+                  Secure Checkout
+                </strong>
 
                 <p>
                   Your order information is
                   protected.
                 </p>
+
               </div>
+
             </div>
 
           </div>
 
         </div>
+
       </div>
     </div>
   );

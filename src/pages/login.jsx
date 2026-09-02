@@ -40,8 +40,13 @@ function Login() {
           password: password,
         });
 
+      // ================= INVALID LOGIN =================
+
       if (error) {
-        setErrorMessage(error.message);
+        setErrorMessage(
+          "User account doesn't exist or invalid credentials."
+        );
+
         return;
       }
 
@@ -49,16 +54,18 @@ function Login() {
 
       setSuccessMessage("Login successful!");
 
-      // Give the success message a moment to show
+      // Give success message a moment to show
       setTimeout(() => {
         navigate("/");
       }, 800);
 
     } catch (error) {
       console.error("Login error:", error);
+
       setErrorMessage(
-        "Something went wrong. Please try again."
+        "User account doesn't exist or invalid credentials."
       );
+
     } finally {
       setLoading(false);
     }
@@ -216,7 +223,9 @@ function Login() {
               className="login-submit"
               disabled={loading}
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading
+                ? "Logging in..."
+                : "Login"}
             </button>
 
           </form>

@@ -10,7 +10,6 @@ import { useEffect } from "react";
 import Navbar from "./components/Navbar";
 
 // Pages
-import AdminDashboard from "./admin/pages/AdminDashboard";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Cart from "./pages/Cart";
@@ -21,6 +20,10 @@ import ForgotPassword from "./pages/forgot-password";
 import ResetPassword from "./pages/reset-password";
 import ProductDetails from "./pages/ProductDetails";
 import About from "./pages/About";
+import Profile from "./pages/Profile";
+import Wishlist from "./pages/Wishlist";
+import Orders from "./pages/Orders";
+import Contact from "./pages/Contact";
 
 // Context
 import { CartProvider } from "./context/CartContext";
@@ -53,79 +56,108 @@ function AnimatedRoutes() {
   const location = useLocation();
 
   return (
-    <div className="page-wrapper">
+    <div
+      className="page-wrapper"
+      key={location.pathname}
+    >
       <Routes location={location}>
 
-        {/* REGISTER */}
+        {/* ================= REGISTER ================= */}
+
         <Route
           path="/register"
           element={<Register />}
         />
 
-        {/* HOME */}
+        {/* ================= HOME ================= */}
+
         <Route
           path="/"
           element={<Home />}
         />
 
-        {/* CART */}
+        {/* ================= CART ================= */}
+
         <Route
           path="/cart"
           element={<Cart />}
         />
 
-        {/* CHECKOUT */}
+        {/* ================= CHECKOUT ================= */}
+
         <Route
           path="/checkout"
           element={<Checkout />}
         />
 
-        {/* LOGIN */}
+        {/* ================= LOGIN ================= */}
+
         <Route
           path="/login"
           element={<Login />}
         />
 
-        {/* SIGNUP */}
+        {/* ================= SIGNUP ================= */}
+
         <Route
           path="/signup"
           element={<Signup />}
         />
 
-        {/* FORGOT PASSWORD */}
+        {/* ================= FORGOT PASSWORD ================= */}
+
         <Route
           path="/forgot-password"
           element={<ForgotPassword />}
         />
 
-        {/* RESET PASSWORD */}
+        {/* ================= RESET PASSWORD ================= */}
+
         <Route
           path="/reset-password"
           element={<ResetPassword />}
         />
 
-        {/* PRODUCT DETAILS */}
+        {/* ================= PRODUCT DETAILS ================= */}
+
         <Route
           path="/product/:id"
           element={<ProductDetails />}
         />
 
-        {/* ABOUT */}
+        {/* ================= ABOUT ================= */}
+
         <Route
           path="/about"
           element={<About />}
         />
 
-        {/* PRODUCTS SEARCH */}
+        {/* ================= CONTACT ================= */}
+
         <Route
-          path="/products"
-          element={<Home />}
+          path="/contact"
+          element={<Contact />}
         />
 
-        {/* ADMIN */}
+        {/* ================= USER PROFILE ================= */}
+
         <Route
-          path="/admin"
-          element={<AdminDashboard />}
+          path="/profile"
+          element={<Profile />}
+        />
+
+        {/* ================= WISHLIST ================= */}
+
+        <Route
+          path="/wishlist"
+          element={<Wishlist />}
+        />
+
+        {/* ================= MY ORDERS ================= */}
+
+        <Route
+          path="/orders"
+          element={<Orders />}
         />
 
       </Routes>
@@ -141,15 +173,18 @@ function App() {
   return (
     <BrowserRouter>
 
-      {/* Automatically scroll to top when URL changes */}
-      <ScrollToTop />
-
       <CartProvider>
 
-        {/* Navbar */}
+        {/* Scroll page to top whenever route changes */}
+
+        <ScrollToTop />
+
+        {/* Navbar stays visible on all pages */}
+
         <Navbar />
 
-        {/* Application Routes */}
+        {/* Application routes */}
+
         <AnimatedRoutes />
 
       </CartProvider>
